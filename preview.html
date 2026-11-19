@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>DEEZEIN | D★ — превью алертов</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #0d090f;
+    color: #fbf1ea;
+    font-family: "Century Gothic", "Futura", "Segoe UI", sans-serif;
+    overflow: hidden;
+  }
+
+  /* имитация игры: чтобы видеть прозрачность оверлея */
+  .game {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 28% 22%, rgba(156, 100, 116, 0.35), transparent 42%),
+      radial-gradient(circle at 74% 68%, rgba(59, 42, 61, 0.85), transparent 46%),
+      linear-gradient(160deg, #2a1e2e 0%, #120d15 58%, #08060a 100%);
+  }
+
+  .game::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(251, 241, 234, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(251, 241, 234, 0.045) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 14px 20px;
+    background: rgba(12, 8, 14, 0.72);
+    border-top: 1px solid rgba(201, 141, 153, 0.22);
+    backdrop-filter: blur(10px);
+    z-index: 5;
+  }
+
+  button {
+    font: inherit;
+    font-size: 13px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 9px 16px;
+    border-radius: 9px;
+    border: 1px solid rgba(201, 141, 153, 0.35);
+    background: rgba(59, 42, 61, 0.55);
+    color: #f0d6c8;
+    cursor: pointer;
+  }
+
+  button:hover { border-color: rgba(201, 141, 153, 0.8); }
+  button.on {
+    background: rgba(201, 141, 153, 0.22);
+    border-color: rgba(201, 141, 153, 0.9);
+    color: #fff6f0;
+  }
+
+  .hint {
+    margin-left: auto;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: rgba(251, 241, 234, 0.45);
+  }
+
+  /* кадр 1920x1080, вписанный в окно */
+  .frame-wrap {
+    position: absolute;
+    inset: 0 0 68px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .frame {
+    position: relative;
+    flex: 0 0 auto;
+    width: 1920px;
+    height: 1080px;
+    transform-origin: center center;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65);
+    outline: 1px solid rgba(201, 141, 153, 0.18);
+  }
+
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    border: 0;
+    background: transparent;
+  }
+
+  .badge {
+    position: absolute;
+    top: -26px;
+    left: 0;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(201, 141, 153, 0.75);
+  }
+</style>
+</head>
+<body>
+<div class="game"></div>
+
+<div class="frame-wrap">
+  <div class="frame" id="frame">
+    <span class="badge">1920 × 1080</span>
+    <iframe id="stage" src="donation.html?preview=1" title="alert"></iframe>
+  </div>
+</div>
+
+<div class="bar">
+  <button data-src="donation.html?preview=1" class="on">Донат</button>
+  <button data-src="follow.html?preview=1">Фоллоу</button>
+  <button data-src="sub.html?preview=1">Подписка</button>
+  <button id="replay">Повторить</button>
+  <span class="hint">клик по «Повторить» = новое событие</span>
+</div>
+
+<script>
+  var frame = document.getElementById('frame');
+  var stage = document.getElementById('stage');
+  var buttons = document.querySelectorAll('button[data-src]');
+
+  function fit() {
+    var pad = 48;
+    var wrap = frame.parentElement.getBoundingClientRect();
+    var scale = Math.min((wrap.width - pad) / 1920, (wrap.height - pad) / 1080);
+    frame.style.transform = 'scale(' + scale + ')';
+  }
+
+  function load(src) {
+    stage.src = src;
+  }
+
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      buttons.forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      load(b.dataset.src);
+    });
+  });
+
+  document.getElementById('replay').addEventListener('click', function () {
+    load(stage.getAttribute('src'));
+  });
+
+  window.addEventListener('resize', fit);
+  fit();
+</script>
+</body>
+</html>
